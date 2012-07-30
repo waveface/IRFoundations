@@ -242,6 +242,8 @@
 }
 
 - (void) scrollToPageAtIndex:(NSUInteger)anIndex animated:(BOOL)animate {
+ 
+  NSCParameterAssert(anIndex <= (self.numberOfPages - 1));
 
 	CGRect pageRectInScrollView = CGRectInset([self pageRectForIndex:anIndex], -1 * self.horizontalSpacing, 0);
 	
