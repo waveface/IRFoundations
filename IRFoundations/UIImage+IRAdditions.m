@@ -97,7 +97,7 @@ static void __attribute__((constructor)) initialize() {
 	if (!foundPath)
 		return nil;
 	
-	NSData *imageData = [NSData dataWithContentsOfMappedFile:foundPath];
+	NSData *imageData = [NSData dataWithContentsOfFile:foundPath options:NSDataReadingMappedIfSafe error:nil];
 	foundPath = nil;
 	
 	CGDataProviderRef providerRef = CGDataProviderCreateWithCFData((__bridge CFDataRef)imageData);
@@ -417,7 +417,7 @@ static void __attribute__((constructor)) initialize() {
 		
 		return NO;
 		
-	} else if (![UIImage imageWithData:[NSData dataWithContentsOfMappedFile:aFilePath]]) {
+	} else if (![UIImage imageWithData:[NSData dataWithContentsOfFile:aFilePath options:NSDataReadingMappedIfSafe error:nil]]) {
 		
 		*error = [NSError errorWithDomain:@"com.iridia.foundations" code:0 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
 			[NSString stringWithFormat:@"Image at %@ can’t be decoded", aFilePath], NSLocalizedDescriptionKey,
