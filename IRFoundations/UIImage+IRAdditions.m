@@ -211,8 +211,11 @@ static void __attribute__((constructor)) initialize() {
 	CGContextScaleCTM(context, self.scale, self.scale);
 	[self drawAtPoint:CGPointZero];
 	
-	return UIGraphicsGetImageFromCurrentImageContext();
+	UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
 
+	CGContextRelease(context);
+
+  return image;
 }
 
 - (UIImage *) irDecodedImage {
