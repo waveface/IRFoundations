@@ -15,6 +15,7 @@
 - (NSUInteger) numberOfViewsInPaginatedView:(IRPaginatedView *)paginatedView;
 - (UIView *) viewForPaginatedView:(IRPaginatedView *)paginatedView atIndex:(NSUInteger)index;
 - (UIViewController *) viewControllerForSubviewAtIndex:(NSUInteger)index inPaginatedView:(IRPaginatedView *)paginatedView;
+- (void) willRemoveView:(UIView *)view atIndex:(NSUInteger)index;
 //	If returned, the view controller gets -viewWillAppear:, -viewDidAppear:, -viewWillDisappear:, -viewDidDisappear:.
 
 @optional

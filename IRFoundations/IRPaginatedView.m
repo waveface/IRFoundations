@@ -195,6 +195,10 @@
 	[self.allViews replaceObjectAtIndex:anIndex withObject:[NSNull null]];
 	
 	[viewController viewWillDisappear:NO];
+
+	if ([self.delegate respondsToSelector:@selector(willRemoveView:atIndex:)])
+    [self.delegate willRemoveView:aView atIndex:anIndex];
+
 	[aView removeFromSuperview];
 	[viewController viewDidDisappear:NO];
 
