@@ -137,6 +137,7 @@
 		}] irMap:IRArrayMapCallbackMakeNullFilter()];
 		
 		NSMutableArray *unusedRemoteDictionaries = [sortedRemoteDictionaries mutableCopy];
+    NSMutableIndexSet *unusedIndexSet = [[NSMutableIndexSet alloc] init];
 		
 		[uniqueValues enumerateObjectsUsingBlock: ^ (id currentUniqueValue, NSUInteger idx, BOOL *stop) {
 		
@@ -146,7 +147,7 @@
 			if ([currentUniqueValue isEqual:[uniqueValues objectAtIndex:(idx - 1)]]) {
 
 				[currentWrapperArray addObject:currentObject];
-				[unusedRemoteDictionaries removeObject:currentObject];
+        [unusedIndexSet addIndex:idx];
 				return;
 			
 			}
@@ -154,13 +155,13 @@
 			NSMutableArray *wrapperArray = [NSMutableArray array];
 			[updatedOrInsertedReps addObject:wrapperArray];
 			[wrapperArray addObject:currentObject];
-			[unusedRemoteDictionaries removeObject:currentObject];
-			
+      [unusedIndexSet addIndex:idx];
 			currentWrapperArray = wrapperArray;
 		
 		}];
-		
 
+    [unusedRemoteDictionaries removeObjectsAtIndexes:unusedIndexSet];
+		
 		for (NSDictionary *anUnusedRemoteDictionary in unusedRemoteDictionaries)
 			[updatedOrInsertedReps addObject:[NSArray arrayWithObject:anUnusedRemoteDictionary]];
 		
