@@ -9,6 +9,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import "UIImage+IRAdditions.h"
 #import "IRImagePickerController.h"
+#import <AssetsLibrary/AssetsLibrary.h>
 
 
 static NSString * const kIRImagePickerControllerVolumeDidChangeNotification = @"IRImagePickerControllerVolumeDidChangeNotification";
@@ -26,47 +27,49 @@ static NSString * const kIRImagePickerControllerAssetLibrary = @"IRImagePickerCo
 @interface IRImagePickerController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
 @property (nonatomic, readwrite, copy) IRImagePickerCallback callbackBlock;
+@property (nonatomic, readwrite, strong) ALAssetsLibrary *assetsLibrary;
 
 @end
 
 
 @implementation IRImagePickerController
 
-@synthesize callbackBlock, takesPictureOnVolumeUpKeypress, usesAssetsLibrary, savesCameraImageCapturesToSavedPhotos;
+@synthesize callbackBlock, takesPictureOnVolumeUpKeypress;
 @synthesize onViewWillAppear, onViewDidAppear, onViewWillDisappear, onViewDidDisappear;
 @synthesize asynchronous;
+@synthesize assetsLibrary;
 
 + (IRImagePickerController *) savedImagePickerWithCompletionBlock:(IRImagePickerCallback)aCallbackBlockOrNil {
     
-	return [self pickerWithSourceType:UIImagePickerControllerSourceTypeSavedPhotosAlbum mediaTypes:[NSArray arrayWithObject:(id)kUTTypeImage] completionBlock:aCallbackBlockOrNil];
+	return [self pickerWithAssetsLibrary:nil SourceType:UIImagePickerControllerSourceTypeSavedPhotosAlbum mediaTypes:[NSArray arrayWithObject:(id)kUTTypeImage] completionBlock:aCallbackBlockOrNil];
     
 }
 
 + (IRImagePickerController *) photoLibraryPickerWithCompletionBlock:(IRImagePickerCallback)aCallbackBlockOrNil {
 	
-	return [self pickerWithSourceType:UIImagePickerControllerSourceTypePhotoLibrary mediaTypes:[NSArray arrayWithObject:(id)kUTTypeImage] completionBlock:aCallbackBlockOrNil];
+	return [self pickerWithAssetsLibrary:nil SourceType:UIImagePickerControllerSourceTypePhotoLibrary mediaTypes:[NSArray arrayWithObject:(id)kUTTypeImage] completionBlock:aCallbackBlockOrNil];
     
 }
 
 + (IRImagePickerController *) cameraCapturePickerWithCompletionBlock:(IRImagePickerCallback)aCallbackBlockOrNil {
     
-	return [self pickerWithSourceType:UIImagePickerControllerSourceTypeCamera mediaTypes:[NSArray arrayWithObjects:(id)kUTTypeImage, (id)kUTTypeMovie, nil] completionBlock:aCallbackBlockOrNil];
+	return [self pickerWithAssetsLibrary:nil SourceType:UIImagePickerControllerSourceTypeCamera mediaTypes:[NSArray arrayWithObjects:(id)kUTTypeImage, (id)kUTTypeMovie, nil] completionBlock:aCallbackBlockOrNil];
     
 }
 
-+ (IRImagePickerController *) cameraImageCapturePickerWithCompletionBlock:(IRImagePickerCallback)aCallbackBlockOrNil {
++ (IRImagePickerController *) cameraImageCapturePickerWithAssetsLibrary:(ALAssetsLibrary *)assetsLibrary completionBlock:(IRImagePickerCallback)aCallbackBlockOrNil {
     
-	return [self pickerWithSourceType:UIImagePickerControllerSourceTypeCamera mediaTypes:[NSArray arrayWithObject:(id)kUTTypeImage] completionBlock:aCallbackBlockOrNil];
+	return [self pickerWithAssetsLibrary:assetsLibrary SourceType:UIImagePickerControllerSourceTypeCamera mediaTypes:[NSArray arrayWithObject:(id)kUTTypeImage] completionBlock:aCallbackBlockOrNil];
     
 }
 
 + (IRImagePickerController *) cameraVideoCapturePickerWithCompletionBlock:(IRImagePickerCallback)aCallbackBlockOrNil {
     
-	return [self pickerWithSourceType:UIImagePickerControllerSourceTypeCamera mediaTypes:[NSArray arrayWithObject:(id)kUTTypeMovie] completionBlock:aCallbackBlockOrNil];
+	return [self pickerWithAssetsLibrary:nil SourceType:UIImagePickerControllerSourceTypeCamera mediaTypes:[NSArray arrayWithObject:(id)kUTTypeMovie] completionBlock:aCallbackBlockOrNil];
     
 }
 
-+ (IRImagePickerController *) pickerWithSourceType:(UIImagePickerControllerSourceType)aSourceType mediaTypes:(NSArray *)inMediaTypes completionBlock:(IRImagePickerCallback)aCallbackBlockOrNil {
++ (IRImagePickerController *) pickerWithAssetsLibrary:(ALAssetsLibrary *)assetsLibrary SourceType:(UIImagePickerControllerSourceType)aSourceType mediaTypes:(NSArray *)inMediaTypes completionBlock:(IRImagePickerCallback)aCallbackBlockOrNil {
 	
 	if (![[self class] isSourceTypeAvailable:aSourceType])
 		return nil;
@@ -80,8 +83,7 @@ static NSString * const kIRImagePickerControllerAssetLibrary = @"IRImagePickerCo
 	returned.mediaTypes = inMediaTypes;
 	returned.callbackBlock = aCallbackBlockOrNil;
 	returned.delegate = returned;
-	returned.usesAssetsLibrary = YES;
-	returned.savesCameraImageCapturesToSavedPhotos = NO;
+  returned.assetsLibrary = assetsLibrary;
 	
 	return returned;
     
@@ -95,86 +97,43 @@ static NSString * const kIRImagePickerControllerAssetLibrary = @"IRImagePickerCo
 
 - (void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     
-	NSURL *assetURL = [info valueForKey:UIImagePickerControllerReferenceURL];
 	UIImage *assetImage = [info valueForKey:UIImagePickerControllerOriginalImage];
 	UIImage *editedImage = [info valueForKey:UIImagePickerControllerEditedImage];
+  NSDictionary *metadata = [info valueForKey:UIImagePickerControllerMediaMetadata];
 	
 	if (editedImage)
 		assetImage = editedImage;
 	
-	if (self.sourceType == UIImagePickerControllerSourceTypeCamera)
-	if (self.savesCameraImageCapturesToSavedPhotos) {
-		
-		[assetImage irWriteToSavedPhotosAlbumWithCompletion:^(BOOL didWrite, NSError *error) {
-		
-			if (!didWrite)
-				NSLog(@"%s: %@", __PRETTY_FUNCTION__, error);
-		
-		}];
-		
-	}
-	
-	NSURL *tempMediaURL = [info valueForKey:UIImagePickerControllerMediaURL];
-	
-	void (^bounceImage)(UIImage *) = ^ (UIImage *anImage) {
-	
-		self.callbackBlock(anImage, nil, nil);
-		return;
+	if (self.sourceType == UIImagePickerControllerSourceTypeCamera) {
 
-	};
-	
-	if (!assetURL) {
-	
-		if (assetImage && !tempMediaURL) {
-		
-			bounceImage(assetImage);
-								
-		} else {
+    __weak IRImagePickerController *wSelf = self;
+    [self.assetsLibrary writeImageToSavedPhotosAlbum:[assetImage CGImage] metadata:metadata completionBlock:^(NSURL *assetURL, NSError *error) {
 
-			if (self.callbackBlock)
-				self.callbackBlock(nil, tempMediaURL, nil);
+      [wSelf.assetsLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset) {
+
+        wSelf.callbackBlock(asset);
+
+      } failureBlock:^(NSError *error) {
+
+        NSLog(@"Unable to read asset:%@ from camera roll, error:%@", assetURL, error);
+        wSelf.callbackBlock(nil);
+
+      }];
+
+    }];
 		
-		}
-	        
 	} else {
-	
-		if (!self.usesAssetsLibrary) {
-		
-			if (assetImage && !tempMediaURL) {
-				bounceImage(assetImage);
-				return;
-			}
-		
-		}
-		
-		ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-		[library assetForURL:assetURL resultBlock: ^ (ALAsset *asset) {
-							
-			objc_setAssociatedObject(asset, &kIRImagePickerControllerAssetLibrary, library, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-			
-			if (self.callbackBlock)
-				self.callbackBlock(nil, tempMediaURL, asset);
-							
-		} failureBlock: ^ (NSError *error) {
-		
-			if (assetImage && !tempMediaURL) {
-				bounceImage(assetImage);
-				return;
-			}
-							
-			if (self.callbackBlock)
-				self.callbackBlock(nil, tempMediaURL, nil);
-							
-		}];
-        
-	}
+
+    NSAssert(NO, @"Unsupported source type of image picker controller");
+
+  }
     
 }
 
 - (void) imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     
 	if (self.callbackBlock)
-		self.callbackBlock(nil, nil, nil);
+		self.callbackBlock(nil);
     
 }
 

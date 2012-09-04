@@ -13,23 +13,20 @@
 
 @interface IRImagePickerController : UIImagePickerController
 
-typedef void (^IRImagePickerCallback) (UIImage *image, NSURL *selectedAssetURI, ALAsset *representedAsset);
+typedef void (^IRImagePickerCallback) (ALAsset *representedAsset);
 
 @property (nonatomic, readonly, copy) IRImagePickerCallback callbackBlock;
 
 //	Conveniences
-+ (IRImagePickerController *) savedImagePickerWithCompletionBlock:(IRImagePickerCallback)aCallbackBlockOrNil;
-+ (IRImagePickerController *) photoLibraryPickerWithCompletionBlock:(IRImagePickerCallback)aCallbackBlockOrNil;
-+ (IRImagePickerController *) cameraCapturePickerWithCompletionBlock:(IRImagePickerCallback)aCallbackBlockOrNil;
-+ (IRImagePickerController *) cameraImageCapturePickerWithCompletionBlock:(IRImagePickerCallback)aCallbackBlockOrNil;
-+ (IRImagePickerController *) cameraVideoCapturePickerWithCompletionBlock:(IRImagePickerCallback)aCallbackBlockOrNil;
+//+ (IRImagePickerController *) savedImagePickerWithCompletionBlock:(IRImagePickerCallback)aCallbackBlockOrNil;
+//+ (IRImagePickerController *) photoLibraryPickerWithCompletionBlock:(IRImagePickerCallback)aCallbackBlockOrNil;
+//+ (IRImagePickerController *) cameraCapturePickerWithCompletionBlock:(IRImagePickerCallback)aCallbackBlockOrNil;
++ (IRImagePickerController *) cameraImageCapturePickerWithAssetsLibrary:(ALAssetsLibrary *)assetsLibrary completionBlock:(IRImagePickerCallback)aCallbackBlockOrNil;
+//+ (IRImagePickerController *) cameraVideoCapturePickerWithCompletionBlock:(IRImagePickerCallback)aCallbackBlockOrNil;
 
-+ (IRImagePickerController *) pickerWithSourceType:(UIImagePickerControllerSourceType)sourceType mediaTypes:(NSArray *)mediaTypes completionBlock:(IRImagePickerCallback)aCallbackBlockOrNil;
++ (IRImagePickerController *) pickerWithAssetsLibrary:(ALAssetsLibrary *)assetsLibrary SourceType:(UIImagePickerControllerSourceType)sourceType mediaTypes:(NSArray *)mediaTypes completionBlock:(IRImagePickerCallback)aCallbackBlockOrNil;
 
 @property (nonatomic, readwrite, assign) BOOL takesPictureOnVolumeUpKeypress;
-
-@property (nonatomic, readwrite, assign) BOOL usesAssetsLibrary; // Default is YES
-@property (nonatomic, readwrite, assign) BOOL savesCameraImageCapturesToSavedPhotos; // Default is NO
 
 @property (nonatomic, readwrite, copy) void (^onViewWillAppear)(BOOL animated);
 @property (nonatomic, readwrite, copy) void (^onViewDidAppear)(BOOL animated);

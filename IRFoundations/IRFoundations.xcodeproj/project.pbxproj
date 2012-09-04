@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		131FDE1E15F5A7CE0073A182 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF3BE088153756FD004C5244 /* AssetsLibrary.framework */; };
 		FF0527E714F398810030D099 /* UITableViewCell+IRAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = FF0527E514F398810030D099 /* UITableViewCell+IRAdditions.h */; };
 		FF0527E814F398810030D099 /* UITableViewCell+IRAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = FF0527E614F398810030D099 /* UITableViewCell+IRAdditions.m */; };
 		FF06363A14B346EA00E7AF78 /* QuartzCore+IRAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = FF0A8CED1337B36A00DDA47C /* QuartzCore+IRAdditions.h */; };
@@ -594,6 +595,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				131FDE1E15F5A7CE0073A182 /* AssetsLibrary.framework in Frameworks */,
 				FFA65DE6150AFF0000E8668C /* MapKit.framework in Frameworks */,
 				FFB67968141E384F006F84E3 /* Security.framework in Frameworks */,
 				FFB67961141E384A006F84E3 /* AddressBook.framework in Frameworks */,
