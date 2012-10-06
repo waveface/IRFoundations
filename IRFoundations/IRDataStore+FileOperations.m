@@ -29,7 +29,7 @@
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 
-		path = [(NSURL *)[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject] path];
+		path = [(NSURL *)[[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject] path];
 	
 	});
 

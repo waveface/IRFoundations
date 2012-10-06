@@ -88,7 +88,7 @@ NSString * const kIRDataStore_DefaultAutoUpdatedMOC = @"IRDataStore_DefaultAutoU
 	
 #else
 	
-	return [(NSURL *)[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject] URLByAppendingPathComponent:defaultFilename];
+	return [(NSURL *)[[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectiory inDomains:NSUserDomainMask] lastObject] URLByAppendingPathComponent:defaultFilename];
 	
 #endif
 
