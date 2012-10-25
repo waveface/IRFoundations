@@ -262,6 +262,13 @@
 	
 	if (!animate)
 		[self removeOffscreenViews];
+  
+  NSUInteger index = 0; for (index = 0; index < numberOfPages; index++) {
+		
+		if ([self requiresVisiblePageAtIndex:index])
+			[self ensureViewAtIndexVisible:index];
+    
+  }
 
 }
 
