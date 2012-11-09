@@ -144,9 +144,13 @@
 }
 
 - (BOOL) requiresVisiblePageAtIndex:(NSUInteger)anIndex {
-
-	if ((currentPage == anIndex) || ((currentPage + 1) == anIndex) || (currentPage == (anIndex + 1)) || ((currentPage +2) == anIndex))
-		return YES;
+  
+  NSUInteger min = 0;
+  if (currentPage > 2)
+    min = currentPage - 2;
+  
+  if ((anIndex <= (currentPage + 2)) && (anIndex >= min))
+      return YES;
 	
 	return NO;
 
