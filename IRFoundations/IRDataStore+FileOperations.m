@@ -184,7 +184,7 @@
 	}
 
 	NSString *currentFilePath = [anObject valueForKey:fileKeyPath];
-	if (![[anObject valueForKey:urlKeyPath] isEqualToString:[anURL absoluteString]]) {
+	if ([anObject valueForKey:urlKeyPath] && ![[anObject valueForKey:urlKeyPath] isEqualToString:[anURL absoluteString]]) {
 		
 		if (outError)
 			*outError = [NSError errorWithDomain:@"com.iridia.dataStore" code:0 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
