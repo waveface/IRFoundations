@@ -164,11 +164,10 @@
 - (void) irAutoMergeSetUp {
 
 	NSParameterAssert(!self.irAutoMergeListener);
-	NSParameterAssert([NSThread isMainThread]);
 
 	__weak IRManagedObjectContext *wSelf = self;
 	
-	self.irAutoMergeListener = [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:nil queue:nil usingBlock: ^ (NSNotification *note) {
+	self.irAutoMergeListener = [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:self queue:nil usingBlock: ^ (NSNotification *note) {
 			
 		[wSelf irAutoMergeHandleManagedObjectContextDidSave:note];
 			
@@ -191,16 +190,17 @@
 	
 	void (^merge)(void) = ^ {
 	
+    NSAssert([NSThread isMainThread], @"This block should run on main thread");
 		@try {
  
 			NSManagedObjectContext *savedContext = (NSManagedObjectContext *)note.object;
-			if (!wSelf)
+			if (!wSelf.mainContext)
 				return;
 			
-			if (savedContext == wSelf)
+			if (savedContext == wSelf.mainContext)
 				return;
 			
-			if (savedContext.persistentStoreCoordinator != wSelf.persistentStoreCoordinator)
+			if (savedContext.persistentStoreCoordinator != wSelf.mainContext.persistentStoreCoordinator)
 				return;
 			
 			//	Fire faults in wSelf for every single changed object.
@@ -209,18 +209,18 @@
 			
 			//	Hat tip: http://stackoverflow.com/questions/3923826/nsfetchedresultscontroller-with-predicate-ignores-changes-merged-from-different
 			
-			[wSelf mergeChangesFromContextDidSaveNotification:note];
+			[wSelf.mainContext mergeChangesFromContextDidSaveNotification:note];
 			
 			for (NSManagedObject *object in [[note userInfo] objectForKey:NSInsertedObjectsKey])
-				[[wSelf objectWithID:[object objectID]] willAccessValueForKey:nil];
+				[[wSelf.mainContext objectWithID:[object objectID]] willAccessValueForKey:nil];
 
 			for (NSManagedObject *object in [[note userInfo] objectForKey:NSUpdatedObjectsKey])
-				[[wSelf objectWithID:[object objectID]] willAccessValueForKey:nil];
+				[[wSelf.mainContext objectWithID:[object objectID]] willAccessValueForKey:nil];
 
 			for (NSManagedObject *object in [[note userInfo] objectForKey:NSDeletedObjectsKey])
-				[[wSelf objectWithID:[object objectID]] willAccessValueForKey:nil];
+				[[wSelf.mainContext objectWithID:[object objectID]] willAccessValueForKey:nil];
 			
-			[wSelf processPendingChanges];
+			[wSelf.mainContext processPendingChanges];
 	
 		} @catch (NSException *exception) {
 		
@@ -232,6 +232,7 @@
 	
 	switch (wSelf.concurrencyType) {
 	
+		case NSPrivateQueueConcurrencyType:
 		case NSConfinementConcurrencyType: {
 		
 			//	TBD: maybe use an instance method to allow customization of the queue on which things happen
@@ -245,7 +246,6 @@
 		
 		}
 		
-		case NSPrivateQueueConcurrencyType:
 		case NSMainQueueConcurrencyType: {
 		
 			//	TBD: test
