@@ -410,8 +410,6 @@ static void __attribute__((constructor)) initialize() {
 	if (!aFilePath)
 		return YES;
 
-	error = error ? error : &(NSError *){ nil };
-	
 	if (aFilePath && ![[NSFileManager defaultManager] fileExistsAtPath:aFilePath]) {
 		
 		*error = [NSError errorWithDomain:@"com.iridia.foundations" code:0 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
