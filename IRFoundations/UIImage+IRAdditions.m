@@ -410,7 +410,7 @@ static void __attribute__((constructor)) initialize() {
 	if (!aFilePath)
 		return YES;
 
-	error = error ? error : &(NSError *){ nil };
+	//error = error ? error : &(NSError *){ nil };
 	
 	if (aFilePath && ![[NSFileManager defaultManager] fileExistsAtPath:aFilePath]) {
 		
