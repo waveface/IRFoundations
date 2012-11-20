@@ -24,6 +24,7 @@ typedef void (^IRObservingsCallbackBlock) (NSKeyValueChange kind, id fromValue, 
 
 - (void) irRemoveObserverBlocksForKeyPath:(NSString *)keyPath;
 - (void) irRemoveObserverBlocksForKeyPath:(NSString *)keyPath context:(void *)context;
+- (void) irRemoveAllObserves;
 
 - (NSMutableArray *) irObservingsHelperBlocksForKeyPath:(NSString *)aKeyPath;
 

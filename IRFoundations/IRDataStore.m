@@ -88,7 +88,7 @@ NSString * const kIRDataStore_DefaultAutoUpdatedMOC = @"IRDataStore_DefaultAutoU
 	
 #else
 	
-	return [(NSURL *)[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject] URLByAppendingPathComponent:defaultFilename];
+	return [(NSURL *)[[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectiory inDomains:NSUserDomainMask] lastObject] URLByAppendingPathComponent:defaultFilename];
 	
 #endif
 
@@ -222,16 +222,25 @@ NSString * const kIRDataStore_DefaultAutoUpdatedMOC = @"IRDataStore_DefaultAutoU
 		__weak IRManagedObjectContext *wContext = returnedContext;
 	
 		returnedContext = (IRManagedObjectContext *)[self newContextWithConcurrencyType:NSMainQueueConcurrencyType];
-		[returnedContext irBeginMergingFromSavesAutomatically];
-		[returnedContext irPerformOnDeallocation: ^ {
-			[wContext irStopMergingFromSavesAutomatically];
-		}];
 		
 		objc_setAssociatedObject(self, &kIRDataStore_DefaultAutoUpdatedMOC, returnedContext, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 	
 	}
 	
 	return returnedContext;
+
+}
+
+- (NSManagedObjectContext *) autoUpdatingMOC {
+
+  __block IRManagedObjectContext *returnedContext = (IRManagedObjectContext *)[self newContextWithConcurrencyType:NSPrivateQueueConcurrencyType];
+  returnedContext.mainContext = [self defaultAutoUpdatedMOC];
+  [returnedContext irBeginMergingFromSavesAutomatically];
+  [returnedContext irPerformOnDeallocation:^{
+    [returnedContext irStopMergingFromSavesAutomatically];
+  }];
+
+  return returnedContext;
 
 }
 

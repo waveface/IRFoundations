@@ -79,9 +79,16 @@
 
 	self.numberOfPages = [self.delegate numberOfViewsInPaginatedView:self];
 	self.allViews = [[NSArray irArrayByRepeatingObject:[NSNull null] count:self.numberOfPages] mutableCopy];
-	
-	if ((self.currentPage + 1) <= numberOfPages)
-	[self ensureViewAtIndexVisible:self.currentPage];
+
+  NSUInteger index = self.currentPage; for (index = 0; index < numberOfPages; index++) {
+		
+		if ([self requiresVisiblePageAtIndex:index])
+			[self ensureViewAtIndexVisible:index];
+    
+  }
+
+//	if ((self.currentPage + 1) <= numberOfPages)
+//	[self ensureViewAtIndexVisible:self.currentPage];
 	
 	[self setNeedsLayout];
 
@@ -137,9 +144,13 @@
 }
 
 - (BOOL) requiresVisiblePageAtIndex:(NSUInteger)anIndex {
-
-	if ((currentPage == anIndex) || ((currentPage + 1) == anIndex) || (currentPage == (anIndex + 1)))
-		return YES;
+  
+  NSUInteger min = 0;
+  if (currentPage > 2)
+    min = currentPage - 2;
+  
+  if ((anIndex <= (currentPage + 2)) && (anIndex >= min))
+      return YES;
 	
 	return NO;
 
@@ -255,6 +266,13 @@
 	
 	if (!animate)
 		[self removeOffscreenViews];
+  
+  NSUInteger index = 0; for (index = 0; index < numberOfPages; index++) {
+		
+		if ([self requiresVisiblePageAtIndex:index])
+			[self ensureViewAtIndexVisible:index];
+    
+  }
 
 }
 
@@ -349,6 +367,13 @@
 	if ([self.delegate respondsToSelector:@selector(paginatedView:didShowView:atIndex:)])
 		[self.delegate paginatedView:self didShowView:[self existingPageAtIndex:self.currentPage] atIndex:self.currentPage];
 	
+  NSUInteger index = 0; for (index = 0; index < numberOfPages; index++) {
+		
+		if ([self requiresVisiblePageAtIndex:index])
+			[self ensureViewAtIndexVisible:index];
+    
+  }
+  
 	[self removeOffscreenViews];
 
 	[self setNeedsLayout];
@@ -372,8 +397,8 @@
 		
 	NSUInteger index = 0; for (index = 0; index < numberOfPages; index++) {
 		
-		if ([self requiresVisiblePageAtIndex:index])
-			[self ensureViewAtIndexVisible:index];
+//		if ([self requiresVisiblePageAtIndex:index])
+//			[self ensureViewAtIndexVisible:index];
 	
 		UIView *existingView = [self existingViewForPageAtIndex:index];
 		

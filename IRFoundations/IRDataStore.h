@@ -22,6 +22,7 @@
 
 - (NSManagedObjectContext *) newContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)type;
 - (NSManagedObjectContext *) defaultAutoUpdatedMOC;
+- (NSManagedObjectContext *) autoUpdatingMOC;
 - (NSManagedObjectContext *) disposableMOC;
 
 - (void) performBlock:(void(^)(void))block waitUntilDone:(BOOL)waitsUntilDone;

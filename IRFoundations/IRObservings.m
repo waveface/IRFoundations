@@ -158,6 +158,15 @@ NSString * const kAssociatedIRObservingsHelpers = @"kAssociatedIRObservingsHelpe
 
 }
 
+- (void) irRemoveAllObserves {
+  
+  NSDictionary *allHelpers = [self irObservingsHelpers];
+	for (NSString *aKey in allHelpers) 
+    [self irRemoveObserverBlocksForKeyPath:aKey];
+  
+  
+}
+
 @end
 
 

@@ -29,7 +29,7 @@
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 
-		path = [(NSURL *)[[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject] path];
+		path = [(NSURL *)[[[NSFileManager defaultManager] URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject] path];
 	
 	});
 
@@ -184,7 +184,7 @@
 	}
 
 	NSString *currentFilePath = [anObject valueForKey:fileKeyPath];
-	if (![[anObject valueForKey:urlKeyPath] isEqualToString:[anURL absoluteString]]) {
+	if ([anObject valueForKey:urlKeyPath] && ![[anObject valueForKey:urlKeyPath] isEqualToString:[anURL absoluteString]]) {
 		
 		if (outError)
 			*outError = [NSError errorWithDomain:@"com.iridia.dataStore" code:0 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
