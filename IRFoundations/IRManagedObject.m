@@ -377,8 +377,9 @@
 			}];
 			
 			if (consumedNodeEntities != [nodeEntities count])
-				[NSException raise:NSInternalInconsistencyException format:@"%s expects to exhaust all entities.", __PRETTY_FUNCTION__];
-			
+				[NSException raise:NSInternalInconsistencyException
+                    format:@"%s expects to exhaust all entities. Check entity mapping again.", __PRETTY_FUNCTION__];
+
 		}
 	
 		return baseEntities;
