@@ -70,7 +70,7 @@
 		if ([aRemoteValueOrNil isKindOfClass:[NSDictionary class]])
 			continue;
 		
-		id aLocalKeyPathOrNSNull = [configurationMapping objectForKey:aRemoteKeyPath];
+		id aLocalKeyPathOrNSNull = configurationMapping[aRemoteKeyPath];
 		
 		if ([aLocalKeyPathOrNSNull isEqual:[NSNull null]])
 		continue;

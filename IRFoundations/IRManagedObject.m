@@ -82,7 +82,7 @@
 				
 			]];
 			
-			[returnedRequest setSortDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:managedObjectKeyPath ascending:YES]]];
+			[returnedRequest setSortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:managedObjectKeyPath ascending:YES]]];
 			
 			[returnedRequest setReturnsObjectsAsFaults:NO];
 			
@@ -95,7 +95,7 @@
 		
 		NSUInteger existingEntitiesCount = [existingEntities count];
 		__block NSUInteger currentEntityIndex = -1;
-		IRManagedObject *currentEntity = (existingEntitiesCount > 0) ? [existingEntities objectAtIndex:0] : nil;
+		IRManagedObject *currentEntity = (existingEntitiesCount > 0) ? existingEntities[0] : nil;
 
 		id (^nextEntity)() = ^ {
 		
@@ -107,7 +107,7 @@
 			if (currentEntityIndex == existingEntitiesCount)
 			return (id)nil;
 			
-			return (id)[existingEntities objectAtIndex:currentEntityIndex];
+			return (id)existingEntities[currentEntityIndex];
 			
 		};
 
@@ -141,10 +141,10 @@
 		
 		[uniqueValues enumerateObjectsUsingBlock: ^ (id currentUniqueValue, NSUInteger idx, BOOL *stop) {
 		
-			id currentObject = [sortedRemoteDictionaries objectAtIndex:idx];
+			id currentObject = sortedRemoteDictionaries[idx];
 		
 			if (idx > 0)
-			if ([currentUniqueValue isEqual:[uniqueValues objectAtIndex:(idx - 1)]]) {
+			if ([currentUniqueValue isEqual:uniqueValues[(idx - 1)]]) {
 
 				[currentWrapperArray addObject:currentObject];
         [unusedIndexSet addIndex:idx];
@@ -163,13 +163,13 @@
     [unusedRemoteDictionaries removeObjectsAtIndexes:unusedIndexSet];
 		
 		for (NSDictionary *anUnusedRemoteDictionary in unusedRemoteDictionaries)
-			[updatedOrInsertedReps addObject:[NSArray arrayWithObject:anUnusedRemoteDictionary]];
+			[updatedOrInsertedReps addObject:@[anUnusedRemoteDictionary]];
 		
 		//	There is a circumstance, where the multiple remote dictionaries can have a same value at dictionaryKeyPath
 		
 		for (NSArray *currentDictionaryWrapper in updatedOrInsertedReps) {
 		
-			id currentDictionary = [currentDictionaryWrapper objectAtIndex:0];
+			id currentDictionary = currentDictionaryWrapper[0];
 		
 			if ([currentDictionary isEqual:[NSNull null]])
 			continue;
@@ -239,7 +239,7 @@
 			
 			[indexes enumerateIndexesUsingBlock: ^ (NSUInteger idx, BOOL *stop) {
 
-				[returnedEntities replaceObjectAtIndex:idx withObject:touchedEntity];
+				returnedEntities[idx] = touchedEntity;
 			
 			}];
 			
@@ -247,7 +247,7 @@
 			
 				NSUInteger foundIndex = [returnedEntities indexOfObjectIdenticalTo:currentDictionary];
 				if (foundIndex != NSNotFound)
-					[returnedEntities replaceObjectAtIndex:foundIndex withObject:touchedEntity];
+					returnedEntities[foundIndex] = touchedEntity;
 			}
 			
 		}
@@ -262,7 +262,7 @@
 + (NSArray *) insertOrUpdateObjectsUsingContext:(NSManagedObjectContext *)context withRemoteResponse:(NSArray *)inRemoteDictionaries usingMapping:(NSDictionary *)remoteKeyPathsToClassNames options:(IRManagedObjectOptions)options {
 
 	if (![inRemoteDictionaries count])
-		return [NSArray array];
+		return @[];
 	
 	@autoreleasepool {
 	
@@ -274,18 +274,18 @@
 		}];
 
 		NSString * const localKeyPath = [self keyPathHoldingUniqueValue];
-		NSString * const remoteKeyPath = localKeyPath ? [[[self remoteDictionaryConfigurationMapping] allKeysForObject:localKeyPath] objectAtIndex:0] : nil;
+		NSString * const remoteKeyPath = localKeyPath ? [[self remoteDictionaryConfigurationMapping] allKeysForObject:localKeyPath][0] : nil;
 		
 		NSArray * const baseEntities = [self insertOrUpdateObjectsIntoContext:context withExistingProperty:localKeyPath matchingKeyPath:remoteKeyPath ofRemoteDictionaries:usedRemoteDictionaries];
 		NSParameterAssert(baseEntities);
 		
-		NSDictionary *baseEntityRelationships = [[[[[context persistentStoreCoordinator] managedObjectModel] entitiesByName] objectForKey:[self coreDataEntityName]] relationshipsByName];
+		NSDictionary *baseEntityRelationships = [[[[context persistentStoreCoordinator] managedObjectModel] entitiesByName][[self coreDataEntityName]] relationshipsByName];
 		
 		
 		for (NSString *rootRemoteKeyPath in remoteKeyPathsToClassNames) {
 		
-			Class nodeEntityClass = NSClassFromString([remoteKeyPathsToClassNames objectForKey:rootRemoteKeyPath]);
-			NSString * const rootLocalKeyPath = [[self remoteDictionaryConfigurationMapping] objectForKey:rootRemoteKeyPath];
+			Class nodeEntityClass = NSClassFromString(remoteKeyPathsToClassNames[rootRemoteKeyPath]);
+			NSString * const rootLocalKeyPath = [self remoteDictionaryConfigurationMapping][rootRemoteKeyPath];
 			
 			//	Skip if the local key path is not mappable
 			if (!rootLocalKeyPath) {
@@ -300,7 +300,7 @@
 				
 			}
 			
-			NSRelationshipDescription *relationship = [baseEntityRelationships objectForKey:rootLocalKeyPath];
+			NSRelationshipDescription *relationship = baseEntityRelationships[rootLocalKeyPath];
 			BOOL const relationIsToMany = [relationship isToMany];
 			BOOL const relationIsOrdered = [relationship isOrdered];
 			BOOL const usesIndividualAdd = relationIsToMany && !relationIsOrdered && (options & IRManagedObjectOptionIndividualOperations);
@@ -316,7 +316,7 @@
 			
 				NSParameterAssert([baseObject isKindOfClass:[IRManagedObject class]]);
 			
-				NSUInteger relatedNodesCount = irCount([nodeRepresentations objectAtIndex:index], 0);
+				NSUInteger relatedNodesCount = irCount(nodeRepresentations[index], 0);
 				
 				if (relatedNodesCount == NSNotFound)
 					return;
@@ -362,7 +362,7 @@
 					
 				} else {
 				
-					[baseObject setValue:[relatedEntities objectAtIndex:0] forKeyPath:rootLocalKeyPath];
+					[baseObject setValue:relatedEntities[0] forKeyPath:rootLocalKeyPath];
 				
 				}
 				

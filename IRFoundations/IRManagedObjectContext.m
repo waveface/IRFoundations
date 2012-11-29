@@ -72,11 +72,7 @@
 				if (!self.initializingThread)
 					@throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Initialing thread no longer exists" userInfo:nil];
 					
-				[self performSelector:@selector(irPerformBlock:) onThread:self.initializingThread withObject:[block copy] waitUntilDone:sync modes:[NSArray arrayWithObjects:
-				
-					NSRunLoopCommonModes,
-				
-				nil]];
+				[self performSelector:@selector(irPerformBlock:) onThread:self.initializingThread withObject:[block copy] waitUntilDone:sync modes:@[NSRunLoopCommonModes]];
 			
 			}
 		
@@ -211,13 +207,13 @@
 			
 			[wSelf.mainContext mergeChangesFromContextDidSaveNotification:note];
 			
-			for (NSManagedObject *object in [[note userInfo] objectForKey:NSInsertedObjectsKey])
+			for (NSManagedObject *object in [note userInfo][NSInsertedObjectsKey])
 				[[wSelf.mainContext objectWithID:[object objectID]] willAccessValueForKey:nil];
 
-			for (NSManagedObject *object in [[note userInfo] objectForKey:NSUpdatedObjectsKey])
+			for (NSManagedObject *object in [note userInfo][NSUpdatedObjectsKey])
 				[[wSelf.mainContext objectWithID:[object objectID]] willAccessValueForKey:nil];
 
-			for (NSManagedObject *object in [[note userInfo] objectForKey:NSDeletedObjectsKey])
+			for (NSManagedObject *object in [note userInfo][NSDeletedObjectsKey])
 				[[wSelf.mainContext objectWithID:[object objectID]] willAccessValueForKey:nil];
 			
 			[wSelf.mainContext processPendingChanges];
