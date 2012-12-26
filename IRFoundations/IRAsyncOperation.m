@@ -12,11 +12,11 @@
 
 @interface IRAsyncOperation ()
 
-@property (nonatomic, readwrite, weak) IRAsyncOperationWorker worker;
-@property (nonatomic, readwrite, weak) IRAsyncOperationTrampoline workerTrampoline;
+@property (nonatomic, readwrite, copy) IRAsyncOperationWorker worker;
+@property (nonatomic, readwrite, copy) IRAsyncOperationTrampoline workerTrampoline;
 
-@property (nonatomic, readwrite, weak) IRAsyncOperationCallback callback;
-@property (nonatomic, readwrite, weak) IRAsyncOperationTrampoline callbackTrampoline;
+@property (nonatomic, readwrite, copy) IRAsyncOperationCallback callback;
+@property (nonatomic, readwrite, copy) IRAsyncOperationTrampoline callbackTrampoline;
 
 @property (nonatomic, readonly, assign, getter=isExecuting) BOOL executing;
 @property (nonatomic, readonly, assign, getter=isFinished) BOOL finished;
