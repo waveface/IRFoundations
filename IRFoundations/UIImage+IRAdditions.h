@@ -25,6 +25,7 @@ typedef void(^IRImageWritingCallback)(BOOL didWrite, NSError *error);
 - (BOOL) irIsDecodedImage;
 
 - (UIImage *) irScaledImageWithSize:(CGSize)aSize;
+- (UIImage *) irScaledImageWithSize:(CGSize)aSize orientation:(UIImageOrientation)orientation;
 - (UIImage *) irSolidImageWithFillColor:(UIColor *)fillColor shadow:(IRShadow *)shadowOrNil;
 
 @property (nonatomic, readwrite, retain, getter=irRepresentedObject, setter=irSetRepresentedObject:) id irRepresentedObject;
