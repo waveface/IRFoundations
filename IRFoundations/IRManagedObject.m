@@ -314,7 +314,7 @@
 			
 			[baseEntities enumerateObjectsUsingBlock: ^ (IRManagedObject *baseObject, NSUInteger index, BOOL *stop) {
 			
-				NSParameterAssert([baseObject isKindOfClass:[IRManagedObject class]]);
+				NSCParameterAssert([baseObject isKindOfClass:[IRManagedObject class]]);
 			
 				NSUInteger relatedNodesCount = irCount(nodeRepresentations[index], 0);
 				
@@ -326,7 +326,7 @@
 				
 				NSArray *relatedEntities = [nodeEntities subarrayWithRange:NSMakeRange(consumedNodeEntities, relatedNodesCount)];
 				
-				NSParameterAssert(rootLocalKeyPath);
+				NSCParameterAssert(rootLocalKeyPath);
 				
 				[baseObject willChangeValueForKey:rootLocalKeyPath];
 				

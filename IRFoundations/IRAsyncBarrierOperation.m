@@ -29,7 +29,7 @@
 - (BOOL) hasFailedDependency {
 
 	for (IRAsyncOperation *op in self.dependencies)
-	if ([op isCancelled] || ([op isFinished] && (!op.results || [op.results isKindOfClass:[NSError class]])))
+	if ([op isCancelled] || ([op isFinished] && [op.results isKindOfClass:[NSError class]]))
 		return YES;
 	
 	return NO;

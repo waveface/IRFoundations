@@ -186,7 +186,7 @@
 	
 	void (^merge)(void) = ^ {
 	
-    NSAssert([NSThread isMainThread], @"This block should run on main thread");
+    NSCAssert([NSThread isMainThread], @"This block should run on main thread");
 		@try {
  
 			NSManagedObjectContext *savedContext = (NSManagedObjectContext *)note.object;
