@@ -272,12 +272,6 @@ static void __attribute__((constructor)) initialize() {
 
 - (UIImage *) irScaledImageWithSize:(CGSize)aSize {
   
-  [self irScaledImageWithSize:aSize orientation:UIImageOrientationUp];
-
-}
-
-- (UIImage *) irScaledImageWithSize:(CGSize)aSize orientation:(UIImageOrientation)orientation {
-
 	if (CGSizeEqualToSize(aSize, CGSizeZero))
 		return self;
 	
@@ -298,7 +292,7 @@ static void __attribute__((constructor)) initialize() {
 	CGColorSpaceRelease(colorSpace);
 	CGContextRelease(context);
 	
-	UIImage *image = [UIImage imageWithCGImage:scaledImage scale:self.scale orientation:orientation];
+	UIImage *image = [UIImage imageWithCGImage:scaledImage scale:self.scale orientation:UIImageOrientationUp];
 	
 	CGImageRelease(scaledImage);
 	
