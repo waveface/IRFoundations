@@ -260,11 +260,8 @@
 
 
 + (NSArray *) insertOrUpdateObjectsUsingContext:(NSManagedObjectContext *)context withRemoteResponse:(NSArray *)inRemoteDictionaries usingMapping:(NSDictionary *)remoteKeyPathsToClassNames options:(IRManagedObjectOptions)options {
-
-	if (![inRemoteDictionaries count])
-		return @[];
-	
-	@autoreleasepool {
+  
+  @autoreleasepool {
 	
 		if (!remoteKeyPathsToClassNames)
 			remoteKeyPathsToClassNames = [self defaultHierarchicalEntityMapping];
@@ -308,7 +305,10 @@
 			NSArray *nodeRepresentations = [usedRemoteDictionaries irMap:IRArrayMapCallbackMakeWithKeyPath(rootRemoteKeyPath)];
 			NSArray *entityRepresentations = [nodeRepresentations irFlatten];
 			
-			NSArray *nodeEntities = [nodeEntityClass insertOrUpdateObjectsUsingContext:context withRemoteResponse:entityRepresentations usingMapping:[nodeEntityClass defaultHierarchicalEntityMapping] options:options];
+      
+      NSCParameterAssert([entityRepresentations count]>0);
+      
+      			NSArray *nodeEntities = [nodeEntityClass insertOrUpdateObjectsUsingContext:context withRemoteResponse:entityRepresentations usingMapping:[nodeEntityClass defaultHierarchicalEntityMapping] options:options];
 			
 			__block NSInteger consumedNodeEntities = 0;
 			
