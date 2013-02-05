@@ -34,6 +34,7 @@
 
 @property (nonatomic, readwrite, assign) NSUInteger currentPage;
 @property (nonatomic, readwrite, assign) NSUInteger numberOfPages;
+@property (nonatomic, readwrite, assign) NSUInteger numberOfEnsuringPages;
 
 @property (nonatomic, readwrite, assign) IBOutlet id<IRPaginatedViewDelegate> delegate;
 @property (nonatomic, readwrite, assign) CGFloat horizontalSpacing; // defaults to 0.0

@@ -66,6 +66,7 @@
 	self.scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
 	self.scrollView.autoresizesSubviews = NO;
 	self.scrollView.delegate = self;
+  self.numberOfEnsuringPages = 2;// default
 	
 	[self addSubview:self.scrollView];
 
@@ -146,10 +147,10 @@
 - (BOOL) requiresVisiblePageAtIndex:(NSUInteger)anIndex {
   
   NSUInteger min = 0;
-  if (currentPage > 2)
-    min = currentPage - 2;
+  if (currentPage > self.numberOfEnsuringPages)
+    min = currentPage - self.numberOfEnsuringPages;
   
-  if ((anIndex <= (currentPage + 2)) && (anIndex >= min))
+  if ((anIndex <= (currentPage + self.numberOfEnsuringPages)) && (anIndex >= min))
       return YES;
 	
 	return NO;
@@ -193,7 +194,7 @@
 	[viewController viewWillAppear:NO];
 	[self.scrollView addSubview:aView];
 	[self setNeedsLayout];
-	[viewController viewDidAppear:NO];
+  [viewController viewDidAppear:NO];
 
 }
 
