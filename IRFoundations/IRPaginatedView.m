@@ -274,6 +274,9 @@
 			[self ensureViewAtIndexVisible:index];
     
   }
+  if ([self.delegate respondsToSelector:@selector(paginatedView:didShowView:atIndex:)])
+    [self.delegate paginatedView:self didShowView:[self existingPageAtIndex:anIndex] atIndex:anIndex];
+
 
 }
 
@@ -415,7 +418,7 @@
 		
 	[self removeOffscreenViews];
 		
-	[self.delegate paginatedView:self didShowView:[self existingPageAtIndex:self.currentPage] atIndex:self.currentPage];
+//	[self.delegate paginatedView:self didShowView:[self existingPageAtIndex:self.currentPage] atIndex:self.currentPage];
 	
 }
 
